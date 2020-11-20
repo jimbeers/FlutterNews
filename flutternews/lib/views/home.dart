@@ -5,7 +5,6 @@ import 'package:flutternews/helper/news.dart';
 import 'package:flutternews/models/article_model.dart';
 import 'package:flutternews/models/category_model.dart';
 import 'package:flutternews/views/article_view.dart';
-import 'package:flutternews/views/category_news.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -23,15 +22,15 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     categories = getCategories();
-    getNews();
+    getNews('business');
   }
 
-  getNews() async {
+  getNews(String category) async {
     News newsClass = News();
-    await newsClass.getNews();
-    articles = newsClass.news;
+    await newsClass.getNews(category: category);
 
     setState(() {
+      articles = newsClass.news;
       _loading = false;
     });
   }
@@ -74,6 +73,7 @@ class _HomeState extends State<Home> {
                             return CategoryTile(
                               imageUrl: categories[index].imageUrl,
                               categoryName: categories[index].categoryName,
+                              getNews: getNews,
                             );
                           },
                         ),
@@ -106,19 +106,21 @@ class _HomeState extends State<Home> {
 class CategoryTile extends StatelessWidget {
   final String imageUrl;
   final String categoryName;
+  final Function getNews;
 
-  const CategoryTile({this.imageUrl, this.categoryName});
+  const CategoryTile({this.imageUrl, this.categoryName, this.getNews});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Category(
-                      category: categoryName.toLowerCase(),
-                    )));
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => Category(
+        //               category: categoryName.toLowerCase(),
+        //             )));
+        getNews(categoryName.toLowerCase());
       },
       child: Container(
         margin: EdgeInsets.only(right: 16),
